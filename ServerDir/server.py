@@ -127,7 +127,7 @@ with app.app_context():
             resposta = jsonify({"header": "erro", "detail": str(e)})
         return resposta
 
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')
     # para depurar a aplicação web no VSCode, é preciso remover debug=True
     # https://stackoverflow.com/questions/17309889/how-to-debug-a-flask-app
 
