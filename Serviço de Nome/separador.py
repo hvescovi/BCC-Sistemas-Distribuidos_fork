@@ -18,7 +18,8 @@ with open(FILE_NAME, "r") as file:                              # Ler arquivo
         else:
             dir_content.append(lines[count:count+n_files])
             count += n_files+1
-    
+
+contador_erro = 0    
 for i in range(len(dir_content)):
     
     if not os.path.exists(str(i)):
@@ -26,7 +27,10 @@ for i in range(len(dir_content)):
     
     for j in range(len(dir_content[i])):
         atributos = dir_content[i][j].split(',')
-        f = open(f"{i}/{atributos[1]}", "w")
-        f.writelines(dir_content[i][j])
-        break
-    break
+        try:
+            f = open(f"{i}/{atributos[1].replace('/','')}", "w")
+            f.writelines(dir_content[i][j])
+        except:
+            #print("erro ao tentar criar: " + atributos[1])
+            contador_erro = contador_erro + 1
+print("Total de erros: " + str(contador_erro))
