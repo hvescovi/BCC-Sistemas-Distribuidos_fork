@@ -4,7 +4,7 @@ import json
 import os
 import time
 
-SERVER_ADDR = "http://localhost:5000"
+SERVER_ADDR = "http://191.52.7.23:5000"
 FILE_DIR = "./files"
 
 class File:
@@ -97,6 +97,13 @@ class Client:
             return True
     
         return False
+    
+    def upload(self, file_name):
+        files = {'files': open(f'{self.file_dir}/{file_name}', 'rb')}
+        response = requests.post(f'{self.server_addr}/escrever', files=files).json()
+
+        return response['header'] == "OK"
+
 
     def read_from_file(self, file_name):
         response = requests.get(f'{self.server_addr}/ler/{file_name}').json()
@@ -221,10 +228,10 @@ def run():
                 # Se o arquivo não existe
                 if not exists:
                     # ler conteudo do arquivo
-                    openedFile = open("./files/" + cur_file['name'], "r")
-                    conteudo = openedFile.read()
+                    #openedFile = open("./files/" + cur_file['name'], "r")
+                    #conteudo = openedFile.read()
                     # adiciona na lista de execução (add_server, name_arquivo)
-                    client.operation_list.append(('add_server',cur_file['name'], conteudo))
+                    client.operation_list.append(('add_server',cur_file['name']))
 
     # -- -- # CASO 2- Novo arquivo no servidor
     # -- -- percorre a lista do servidor atual
@@ -246,17 +253,21 @@ def run():
             for operation in client.operation_list:
                 if(operation[0] == 'add_server'):
                     # cria arquivo no servidor
-                    client.create_file(operation[1])
-                    client.write_to_file(operation[1], operation[2])
+                    #client.create_file(operation[1])
+                    #client.write_to_file(operation[1], operation[2])
+                    client.upload(operation[1])
                     print(f"Novo arquivo local enviado para o servidor - {operation[1]}")
+                
                 elif(operation[0] == 'add_local'):
                     # cria arquivo local
                     newFile = open("./files/" + operation[1], "x")
                     newFile.write(operation[2])
                     newFile.close()
+                
                 elif(operation[0] == 'remove_server'):
                     # remove arquivo do servidor
                     client.remove_file(operation[1])
+                
                 elif(operation[0] == 'remove_local'):
                     # remove arquivo local
                     os.remove("./files/" + operation[1])
